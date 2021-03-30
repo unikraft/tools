@@ -1,2 +1,2 @@
 sphinx_rtd_theme==0.4.3
-virtualenv==16.7.3
+virtualenv==20.4.3
