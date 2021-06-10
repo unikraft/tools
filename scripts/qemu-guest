@@ -396,6 +396,8 @@ OPT_PCIUNBIND=1
 OPT_PAUSED=1
 OPT_TRACE=1
 OPT_HWACCEL=0
+OPT_MONITOR=1
+OPT_SERIAL=1
 
 NICID=0
 VIRTIOID=0
@@ -470,6 +472,8 @@ usage()
 	echo "  -D                         Dry-run: Print generated QEMU command line and exit"
 	echo "  -Q [PATH]                  Use PATH as QEMU executable (overwrites auto-detection)"
 	echo "  -M [COMMAND]               Execute monitor command before unpausing guest (multiple possible)"
+    echo "  -j [PATH]                  Path to directory where 'monitor.socket' will be written."
+    echo "  -o [PATH]                  Path to directory where 'serial.socket' socket will be written."
 	echo ""
 	echo "Examples:"
 	echo "  # guest with 3 vCPUs pinned to cores 1-3, 4GB RAM"
@@ -480,7 +484,7 @@ usage()
 	echo "  $0 -c 2 -m 2048 -b virbr0 -b virbr1 -q root.qcow2 -d /dev/sdb -d /dev/sdc"
 }
 
-while getopts :hnN:b:V:f:G:d:q:S:I:e:k:i:a:c:m:v:lrs:p:HxCDG:g:PT:WQ:M:t: OPT; do
+while getopts :hnN:b:V:f:G:d:q:S:I:e:k:i:a:c:m:v:lrs:p:HxCDG:g:PT:WQ:M:t:j:o: OPT; do
         case ${OPT} in
 	v)
 		OPT_VIDEOVNC=0
@@ -675,6 +679,14 @@ EOF
 	t)
 		ARG_MACHINETYPE="${OPTARG}"
 		;;
+    j)
+        OPT_MONITOR=0
+        ARG_MONITOR_SOCKET="${OPTARG}"
+        ;;
+    o)
+        OPT_SERIAL=0
+        ARG_SERIAL_SOCKET="${OPTARG}"
+        ;;
 	h)
 		usage
 		exit 0
@@ -840,6 +852,16 @@ if [ $OPT_PCIUNBIND -eq 0 ]; then
 		    release_pci "$P" "$PCIASSIGN_MODE" || exit 1
 		done
 	fi
+fi
+
+# monitor port
+if [ $OPT_MONITOR -eq 0 ]; then
+    SOCK_MONITOR=${ARG_MONITOR_SOCKET}/monitor.sock
+fi
+
+# serial port
+if [ $OPT_SERIAL -eq 0 ]; then
+    SOCK_SERIAL=${ARG_SERIAL_SOCKET}/serial.sock
 fi
 
 # serial port
