@@ -1,6 +1,6 @@
 coverage==5.5
 ddt==1.2.2
-flake8==3.7.9
+flake8==3.9.0
 mock==3.0.5
 pre-commit==1.21.0
 pytest==6.2.2; python_version >= '3.5'
